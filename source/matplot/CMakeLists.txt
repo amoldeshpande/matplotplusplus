@@ -85,7 +85,7 @@ add_library(matplot
         freestanding/histcounts.h
         freestanding/histcounts.cpp
         freestanding/plot.h
-)
+ "backend/windows_gdiplus.cpp")
 
 set(TARGETS matplot)
 
