@@ -17,6 +17,16 @@
       }
     },
     {
+      "name": "devWindows",
+      "displayName": "Windows Development Mode",
+      "description": "Build with warnings and debug symbols",
+      "binaryDir": "build",
+      "generator": "Visual Studio 17 2022",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
       "name": "system",
       "displayName": "Build for system installation",
       "description": "Build for system installation (MATPLOTPP_BUILD_EXAMPLES and MATPLOTPP_BUILD_TESTS are OFF)",
