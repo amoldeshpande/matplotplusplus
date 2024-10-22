@@ -10,6 +10,8 @@ add_library(matplot
         backend/gnuplot.cpp
         backend/backend_registry.h
         backend/backend_registry.cpp
+        backend/windows_gdiplus.h
+        backend/windows_gdiplus.cpp
 
         core/axes_type.cpp
         core/axes_type.h

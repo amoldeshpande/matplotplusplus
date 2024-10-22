@@ -7,7 +7,7 @@ using namespace Gdiplus;
 namespace matplot::backend {
 
     windows_gdiplus::windows_gdiplus(HWND hwnd) : window_handle_(hwnd) {
-        Gdiplus::GdiplusStartupInput startup_input;
+        GdiplusStartupInput startup_input;
 
         GdiplusStartup(&gdiplus_token_,&startup_input,NULL);
     }
@@ -25,7 +25,7 @@ namespace matplot::backend {
     unsigned int windows_gdiplus::height() {
         RECT rect;
         if (GetWindowRect(window_handle_, &rect)) {
-            return rect.top - rect.bottom;
+            return rect.bottom - rect.top;
         }
         return 0;
     }
@@ -80,48 +80,86 @@ namespace matplot::backend {
         return true;    
     }
     bool windows_gdiplus::render_data() { 
-       return true; }
-    void windows_gdiplus::show(matplot::figure_type *) {}
+       return true; 
+    }
+    void windows_gdiplus::show(matplot::figure_type *) {
+    }
 
     bool windows_gdiplus::should_close() {
         return false; 
     }
     void windows_gdiplus::draw_background(const std::array<float, 4> &color) {
-       
+        Status status;
         Graphics graphics(window_handle_);
-        graphics.Clear(Color(floats_to_argb(color)));
-
+        status = graphics.Clear(floats_to_color(color));
     }
     void windows_gdiplus::draw_rectangle(const double x1, const double x2,
                                          const double y1, const double y2,
                                          const std::array<float, 4> &color) {
         Graphics graphics(window_handle_);
-        Pen pen(Color(floats_to_argb(color)));
+        transform_coordinates(graphics);
+        Pen pen(floats_to_color(color));
         graphics.DrawRectangle(&pen, (REAL)x1, y1, x2 - x1, y2 - y1);
     }
 
     void windows_gdiplus::draw_path(const std::vector<double> &x,
                                     const std::vector<double> &y,
                                     const std::array<float, 4> &color) {
+        GraphicsPath path;
+        Graphics graphics(window_handle_);
+        Pen pen(floats_to_color(color));
+        Status status;      
+        std::vector<Point> points;
 
+        transform_coordinates(graphics);
+
+        for (size_t si = 0; si < y.size(); si++) {
+            INT xsi = x.empty() ? 0 : (INT)x[si];
+            points.emplace_back(xsi, (INT)y[si]);
+        }
+        status = path.AddLines(&points[0], points.size());
+
+        status = graphics.DrawPath(&pen, &path);
+
+    }
+
+    void windows_gdiplus::draw_markers(const std::vector<double> &x,
+                                       const std::vector<double> &y,
+                                       const std::vector<double> &z) {
         throw std::logic_error("not implemented");        
     }
 
-    ARGB windows_gdiplus::floats_to_argb(const std::array<float, 4> &color) {
+    void windows_gdiplus::draw_text(const std::vector<double> &x,
+                                    const std::vector<double> &y,
+                                    const std::vector<double> &z) {
+        throw std::logic_error("not implemented");        
+    }
 
-        //alpha
-        ARGB argb = (BYTE)color[0] * 255;
-        argb <<= 8;
-        // red
-        argb |= (BYTE)color[1] * 255;
-        argb <<= 8;
-        //green
-        argb |= (BYTE)color[2] * 255;
-        argb <<= 8;
-        //blue
-        argb |= (BYTE)color[3] * 255;
+    void
+    windows_gdiplus::draw_image(const std::vector<std::vector<double>> &x,
+                                const std::vector<std::vector<double>> &y,
+                                const std::vector<std::vector<double>> &z) {
+        throw std::logic_error("not implemented");        
+    }
 
-        return argb;
+    void windows_gdiplus::draw_triangle(const std::vector<double> &x,
+                                        const std::vector<double> &y,
+                                        const std::vector<double> &z) {
+        throw std::logic_error("not implemented");
+    }
+    Color windows_gdiplus::floats_to_color(const std::array<float, 4> &color) {
+
+        Color gdi_color((1.0 - color[0])*255,color[1] * 255, color[2] * 255, color[3] * 255);
+
+        return gdi_color;
+    }
+
+    void windows_gdiplus::transform_coordinates( Graphics &graphics) {
+        RECT rect;
+        Status status;
+        if (GetWindowRect(window_handle_, &rect)) {
+            status = graphics.TranslateTransform(0, rect.bottom);
+        }
     }
 
 } // namespace matplot::backend

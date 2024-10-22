@@ -1,0 +1,1 @@
+add_matplot_windows_gui_example(example_windows_gdiplus example_windows_gdiplus1.cpp)

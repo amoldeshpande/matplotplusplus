@@ -52,6 +52,7 @@ namespace matplot::backend {
         HWND window_handle_;
 
         ULONG_PTR gdiplus_token_;
-        Gdiplus::ARGB floats_to_argb(const std::array<float, 4> &color);
+        Gdiplus::Color floats_to_color(const std::array<float, 4> &color);
+        void transform_coordinates( Gdiplus::Graphics& graphics);
     };
 }
