@@ -1,9 +1,26 @@
 #include "windows_gdiplus.h"
+#include <matplot/core/figure_type.h>
 #include <array>
 #include <stdexcept>
 
 using namespace Gdiplus;
 
+void dprintf(char *format, ...) { /* } */
+    va_list vl;
+    char putbuf[2048];
+    DWORD err;
+
+    err = GetLastError();
+    {
+        va_start(vl, format);
+#pragma warning(disable : 4995)
+        wvsprintf(putbuf, format, vl);
+#pragma warning(default : 4995)
+        va_end(vl);
+        OutputDebugString(putbuf);
+    }
+    SetLastError(err);
+}
 namespace matplot::backend {
 
     windows_gdiplus::windows_gdiplus(HWND hwnd) : window_handle_(hwnd) {
@@ -18,6 +35,7 @@ namespace matplot::backend {
     unsigned int windows_gdiplus::width() {
         RECT rect;
         if (GetWindowRect(window_handle_, &rect)) {
+            dprintf("Returning width %d\n", rect.right - rect.left);
             return rect.right - rect.left;
         }
         return 0;
@@ -25,6 +43,7 @@ namespace matplot::backend {
     unsigned int windows_gdiplus::height() {
         RECT rect;
         if (GetWindowRect(window_handle_, &rect)) {
+            dprintf("Returning height %d\n", rect.bottom - rect.top);
             return rect.bottom - rect.top;
         }
         return 0;
@@ -82,7 +101,8 @@ namespace matplot::backend {
     bool windows_gdiplus::render_data() { 
        return true; 
     }
-    void windows_gdiplus::show(matplot::figure_type *) {
+    void windows_gdiplus::show(matplot::figure_type *f) {
+        f->draw();
     }
 
     bool windows_gdiplus::should_close() {
@@ -97,8 +117,8 @@ namespace matplot::backend {
                                          const double y1, const double y2,
                                          const std::array<float, 4> &color) {
         Graphics graphics(window_handle_);
-        transform_coordinates(graphics);
         Pen pen(floats_to_color(color));
+        transform_coordinates(graphics);
         graphics.DrawRectangle(&pen, (REAL)x1, y1, x2 - x1, y2 - y1);
     }
 
@@ -111,14 +131,17 @@ namespace matplot::backend {
         Status status;      
         std::vector<Point> points;
 
-        transform_coordinates(graphics);
+
+        dprintf("draw path\n");
 
         for (size_t si = 0; si < y.size(); si++) {
             INT xsi = x.empty() ? 0 : (INT)x[si];
+            dprintf("\tX %d, Y %d\n", xsi,(INT) y[si]);
             points.emplace_back(xsi, (INT)y[si]);
         }
-        status = path.AddLines(&points[0], points.size());
+        status = path.AddLines(points.data(), points.size());
 
+        transform_coordinates(graphics);
         status = graphics.DrawPath(&pen, &path);
 
     }
@@ -158,7 +181,9 @@ namespace matplot::backend {
         RECT rect;
         Status status;
         if (GetWindowRect(window_handle_, &rect)) {
-            status = graphics.TranslateTransform(0, rect.bottom);
+            dprintf("transforming bottom by %d\n", rect.bottom-rect.top);
+            status = graphics.TranslateTransform(0, rect.bottom- rect.top);
+            status = graphics.ScaleTransform(1.0, -1.0);
         }
     }
 

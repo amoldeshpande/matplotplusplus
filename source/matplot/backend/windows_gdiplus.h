@@ -10,7 +10,7 @@ namespace matplot::backend {
         explicit windows_gdiplus(HWND hwnd);
         ~windows_gdiplus();
 
-        virtual bool is_interactive() override { return false; }
+        virtual bool is_interactive() override { return true; }
         virtual unsigned int width() override;
         virtual unsigned int height() override;
         virtual void width(unsigned int);

@@ -8,20 +8,23 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 figure_handle default_figure = nullptr;
 
 void setup(HWND hwnd) { 
-    default_figure = figure<backend::windows_gdiplus>(true,hwnd);
+    //default_figure = figure<backend::windows_gdiplus>(true,hwnd);
+    default_figure = figure<backend::gnuplot>(true);
+
 
     figure(default_figure);
 }
 void stem_it() {
-    std::vector<double> x = linspace(0, 2 * pi, 50);
 
-    std::vector<std::vector<double>> Y(2);
-    Y[0] = transform(x, [](auto x) { return cos(x); });
-    Y[1] = transform(x, [](auto x) { return 0.5 * sin(x); });
+    vector_1d data = {2, 4, 6, 7, 8, 7, 5, 2};
+    stem(data);
+    /*auto r1 = rectangle(2.5, 5.5, 2, 2);
+    r1->color("red");
 
-    stem(Y, "-o");
+    auto r2 = rectangle(6.5, 4.5, 1, 1);
+    r2->fill(true);
+    r2->color({0.8f, 0.f, 0.f, 1.f});*/
 
-    show();
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,PSTR pCmdLine, int nCmdShow) {
@@ -72,6 +75,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,PSTR pCmdLine, i
 
     return 0;
 }
+
+VOID OnPaint(HWND hdc) {
+    RECT rect;
+    Gdiplus::Graphics graphics(hdc);
+    Gdiplus::Pen pen(Gdiplus::Color(255, 255, 255, 255));
+    graphics.Clear(Gdiplus::Color(255, 0xef, 0xef, 0xef));
+    graphics.DrawLine(&pen, 0, 0, 200, 100);
+    GetWindowRect(hdc, &rect);
+    Gdiplus::REAL width = 1158 - 166.39, height = 679.87 - 80.849;
+    graphics.DrawRectangle(&pen, (Gdiplus::REAL)166.39, 1158.39, width, height);
+}
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                             LPARAM lParam) {
 
@@ -87,7 +101,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
 
         case WM_PAINT: {
             HDC hdc = BeginPaint(hwnd, &ps);
-            default_figure->draw();
+            //OnPaint(hwnd);
+            show();
             EndPaint(hwnd, &ps);
             return 0;
         }
