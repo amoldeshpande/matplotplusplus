@@ -2766,8 +2766,19 @@ namespace matplot {
         void draw_path(const std::vector<double> &x,
                        const std::vector<double> &y,
                        const std::array<float, 4> &color);
+        /* disconnected lines*/
+        void draw_lines(const std::vector<double> &x,
+                        const std::vector<double> &y,
+                        const std::array<float, 4> &color);
 
-      private /* members */:
+      private /* members */: 
+          std::tuple<
+                  std::vector<double>,
+                  std::vector<double>, double, double> calculate_limits(const std::vector<double> &x,
+                                                const std::vector<double> &y,
+                                                const std::array<float, 4>
+                                                    &color);
+
         // axes
         class axis_type x_axis_ {
             this, true

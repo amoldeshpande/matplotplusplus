@@ -159,6 +159,10 @@ namespace matplot {
             virtual void draw_path(const std::vector<double> &x,
                                    const std::vector<double> &y,
                                    const std::array<float, 4> &color);
+            virtual void draw_lines(const std::vector<double> &x,
+                                   const std::vector<double> &y,
+                                   double xmin, double ymin,
+                                   const std::array<float, 4> &color){}
 
             /// \brief Draw markers on the image
             virtual void draw_markers(const std::vector<double> &x,

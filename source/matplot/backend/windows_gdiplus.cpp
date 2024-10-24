@@ -146,6 +146,25 @@ namespace matplot::backend {
 
     }
 
+    void windows_gdiplus::draw_lines(const std::vector<double> &x,
+                                     const std::vector<double> &y,
+                                     double xmin, double ymin,
+                                     const std::array<float, 4> &color) {
+        GraphicsPath path;
+        Graphics graphics(window_handle_);
+        Pen pen(floats_to_color(color));
+        Status status;
+        std::vector<PointF> points;
+
+        dprintf("draw lines\n");
+        transform_coordinates(graphics);
+
+        for (size_t si = 0; si < y.size(); si++) {
+            dprintf("\tX %d, Y %d\n", (INT)x[si], (INT)y[si]);    
+            status = graphics.DrawLine(&pen,REAL(x[si]),ymin,REAL(x[si]),REAL(y[si]));
+        }
+    }
+
     void windows_gdiplus::draw_markers(const std::vector<double> &x,
                                        const std::vector<double> &y,
                                        const std::vector<double> &z) {

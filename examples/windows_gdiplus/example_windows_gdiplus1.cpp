@@ -8,8 +8,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 figure_handle default_figure = nullptr;
 
 void setup(HWND hwnd) { 
-    //default_figure = figure<backend::windows_gdiplus>(true,hwnd);
-    default_figure = figure<backend::gnuplot>(true);
+    default_figure = figure<backend::windows_gdiplus>(true,hwnd);
+    //default_figure = figure<backend::gnuplot>(true);
 
 
     figure(default_figure);

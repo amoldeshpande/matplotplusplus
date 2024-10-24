@@ -35,6 +35,9 @@ namespace matplot::backend {
         virtual void draw_path(const std::vector<double> &x,
                                const std::vector<double> &y,
                                const std::array<float, 4> &color) override;
+        virtual void draw_lines(const std::vector<double> &x,
+                               const std::vector<double> &y, double, double,
+                               const std::array<float, 4> &color) override;
         virtual void draw_markers(const std::vector<double> &x,
                                   const std::vector<double> &y,
                                   const std::vector<double> &z = {}) override;

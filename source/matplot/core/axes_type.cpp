@@ -5535,6 +5535,24 @@ namespace matplot {
     void axes_type::draw_path(const std::vector<double> &x,
                               const std::vector<double> &y,
                               const std::array<float, 4> &color) {
+       
+        auto [cx, cy,xmin,ymin] = calculate_limits(x, y, color);
+        // draw the normalized path to the backend
+        parent_->backend_->draw_path(cx, cy, color);
+    }
+    void axes_type::draw_lines(const std::vector<double> &x,
+                              const std::vector<double> &y,
+                              const std::array<float, 4> &color) {
+
+        auto [cx, cy,xmin,ymin] = calculate_limits(x, y, color);
+        parent_->backend_->draw_lines(cx, cy,xmin,ymin, color);
+    }
+    std::tuple < std::vector<double>,
+        std::vector<double>,double,double>
+        axes_type::calculate_limits(const std::vector<double>& x,
+            const std::vector<double>& y,
+            const std::array<float, 4>& color)
+    {
         // we still have to make limits calculate and return the
         // automatic limits rather than the default limits
         auto xlimits = xlim();
@@ -5568,8 +5586,7 @@ namespace matplot {
             v *= view_ymax - view_ymin;
             v += view_ymin;
         }
-        // draw the normalized path to the backend
-        parent_->backend_->draw_path(cx, cy, color);
+        return std::tuple(cx,cy,view_xmin,view_ymin);
     }
 
 } // namespace matplot
